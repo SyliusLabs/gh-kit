@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/SyliusLabs/gh-kit/internal/factory"
+	"github.com/SyliusLabs/gh-kit/internal/github/current_repository"
 	"github.com/cli/go-gh/pkg/api"
-	"github.com/jakubtobiasz/gh-kit/internal/factory"
-	"github.com/jakubtobiasz/gh-kit/internal/github/current_repository"
 )
 
 var client api.RESTClient

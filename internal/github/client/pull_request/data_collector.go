@@ -2,10 +2,10 @@ package pull_request
 
 import (
 	"fmt"
+	"github.com/SyliusLabs/gh-kit/internal/factory"
+	"github.com/SyliusLabs/gh-kit/internal/github/current_repository"
 	"github.com/cli/go-gh/pkg/api"
 	"github.com/google/go-github/v49/github"
-	"github.com/jakubtobiasz/gh-kit/internal/factory"
-	"github.com/jakubtobiasz/gh-kit/internal/github/current_repository"
 )
 
 var client api.RESTClient

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jakubtobiasz/gh-kit/cmd"
+	"github.com/SyliusLabs/gh-kit/cmd"
 )
 
 func main() {

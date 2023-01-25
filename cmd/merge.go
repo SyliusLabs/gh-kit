@@ -2,17 +2,17 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/jakubtobiasz/gh-kit/internal/github/client/issue"
-	pull_request_client "github.com/jakubtobiasz/gh-kit/internal/github/client/pull_request"
-	"github.com/jakubtobiasz/gh-kit/internal/github/current_repository"
-	"github.com/jakubtobiasz/gh-kit/internal/github/pull_request"
+	"github.com/SyliusLabs/gh-kit/internal/github/client/issue"
+	pullRequestClient "github.com/SyliusLabs/gh-kit/internal/github/client/pull_request"
+	"github.com/SyliusLabs/gh-kit/internal/github/current_repository"
+	"github.com/SyliusLabs/gh-kit/internal/github/pull_request"
 	"github.com/spf13/cobra"
 )
 
 var allowedMergeStrategies = map[string]bool{"merge": true, "squash": true, "rebase": true}
 
 var mergeCmd = &cobra.Command{
-	Use:   "merge",
+	Use:   "merge <pull_request_number>",
 	Short: "Merge a pull request",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -22,7 +22,7 @@ var mergeCmd = &cobra.Command{
 			return
 		}
 
-		pr, prErr := pull_request_client.GetData(repo, args[0])
+		pr, prErr := pullRequestClient.GetData(repo, args[0])
 		if nil != prErr {
 			fmt.Println("The pull request does not exist")
 			return
@@ -42,7 +42,7 @@ var mergeCmd = &cobra.Command{
 		mergeCategory, _ := cmd.Flags().GetString("category")
 		mergeSubject := pull_request.GenerateSubjectWithCategory(mergeCategory, pr.GetNumber(), pr.GetTitle(), pr.GetUser().GetLogin())
 
-		commits, commitsErr := pull_request_client.GetCommits(repo, pr.GetNumber())
+		commits, commitsErr := pullRequestClient.GetCommits(repo, pr.GetNumber())
 		if nil != commitsErr {
 			fmt.Println("The pull request commits could not be fetched")
 			return
