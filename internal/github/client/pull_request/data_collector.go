@@ -1,4 +1,4 @@
-package client
+package pull_request
 
 import (
 	"fmt"
@@ -14,12 +14,23 @@ func init() {
 	client = factory.CreateGitHubClient()
 }
 
-func GetPullRequestData(repo current_repository.CurrentRepository, number string) (github.PullRequest, error) {
+func GetData(repo current_repository.CurrentRepository, number string) (github.PullRequest, error) {
 	var response = github.PullRequest{}
 
 	err := client.Get(fmt.Sprintf("repos/%s/%s/pulls/%s", repo.Owner, repo.Name, number), &response)
 	if nil != err {
 		return github.PullRequest{}, err
+	}
+
+	return response, nil
+}
+
+func GetCommits(repo current_repository.CurrentRepository, number int) ([]github.RepositoryCommit, error) {
+	var response []github.RepositoryCommit
+
+	err := client.Get(fmt.Sprintf("repos/%s/%s/pulls/%d/commits", repo.Owner, repo.Name, number), &response)
+	if nil != err {
+		return []github.RepositoryCommit{}, err
 	}
 
 	return response, nil

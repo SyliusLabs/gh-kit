@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/jakubtobiasz/gh-kit/internal/github/client"
 	"github.com/jakubtobiasz/gh-kit/internal/github/client/issue"
+	pull_request_client "github.com/jakubtobiasz/gh-kit/internal/github/client/pull_request"
 	"github.com/jakubtobiasz/gh-kit/internal/github/current_repository"
 	"github.com/jakubtobiasz/gh-kit/internal/github/pull_request"
 	"github.com/spf13/cobra"
@@ -22,7 +22,7 @@ var mergeCmd = &cobra.Command{
 			return
 		}
 
-		pr, prErr := client.GetPullRequestData(repo, args[0])
+		pr, prErr := pull_request_client.GetData(repo, args[0])
 		if nil != prErr {
 			fmt.Println("The pull request does not exist")
 			return
@@ -42,7 +42,15 @@ var mergeCmd = &cobra.Command{
 		mergeCategory, _ := cmd.Flags().GetString("category")
 		mergeSubject := pull_request.GenerateSubjectWithCategory(mergeCategory, pr.GetNumber(), pr.GetTitle(), pr.GetUser().GetLogin())
 
-		mergeErr := pull_request.Merge(pr.GetNumber(), mergeSubject, mergeStrategy)
+		commits, commitsErr := pull_request_client.GetCommits(repo, pr.GetNumber())
+		if nil != commitsErr {
+			fmt.Println("The pull request commits could not be fetched")
+			return
+		}
+
+		mergeBody := pull_request.GenerateCommitBody(pr, commits)
+
+		mergeErr := pull_request.Merge(pr.GetNumber(), mergeSubject, mergeBody, mergeStrategy)
 
 		if nil != mergeErr {
 			fmt.Println(fmt.Sprintf("The pull request #%d could not be merged. Error message: %s", pr.GetNumber(), mergeErr.Error()))

@@ -6,8 +6,14 @@ import (
 	"strconv"
 )
 
-func Merge(number int, subject string, strategy string) error {
-	_, _, err := gh.Exec("pr", "merge", strconv.Itoa(number), "--subject", subject, fmt.Sprintf("--%s", strategy))
+func Merge(number int, subject string, body string, strategy string) error {
+	cmd := []string{"pr", "merge", strconv.Itoa(number), fmt.Sprintf("--%s", strategy)}
+
+	if "merge" == strategy {
+		cmd = append(cmd, "--subject", subject, "--body", body)
+	}
+
+	_, _, err := gh.Exec(cmd[:]...)
 
 	return err
 }
