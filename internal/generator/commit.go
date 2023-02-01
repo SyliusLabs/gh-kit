@@ -1,4 +1,4 @@
-package pull_request
+package generator
 
 import (
 	"fmt"
@@ -22,4 +22,8 @@ Commits
 	}
 
 	return msg
+}
+
+func GenerateCommitMessage(category string, number int, title string, author string) string {
+	return fmt.Sprintf("%s #%d %s (%s)", category, number, title, author)
 }
