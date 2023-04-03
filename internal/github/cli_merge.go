@@ -1,11 +1,11 @@
-package githubcli
+package github
 
 import (
 	"fmt"
 	"strconv"
 )
 
-func Merge(c GhCliExecutor, number int, subject string, body string, strategy string) error {
+func (c Cli) Merge(number int, subject string, body string, strategy string) error {
 	cmd := []string{"pr", "merge", strconv.Itoa(number), fmt.Sprintf("--%s", strategy)}
 
 	if "merge" == strategy {

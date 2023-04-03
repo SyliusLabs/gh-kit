@@ -2,7 +2,7 @@
 // Source: cli.go
 
 // Package githubcli is a generated GoMock package.
-package githubcli
+package github
 
 import (
 	bytes "bytes"
@@ -11,7 +11,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockGhCliExecutor is a mock of GhCliExecutor interface.
+// MockGhCliExecutor is a mock of CliExecutor interface.
 type MockGhCliExecutor struct {
 	ctrl     *gomock.Controller
 	recorder *MockGhCliExecutorMockRecorder

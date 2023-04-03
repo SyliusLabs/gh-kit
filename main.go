@@ -3,18 +3,51 @@ package main
 import (
 	"fmt"
 	"github.com/SyliusLabs/gh-kit/cmd"
+	"github.com/SyliusLabs/gh-kit/internal/github"
+	"go.uber.org/fx"
+	"os"
 )
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Print(r)
-		}
-	}()
+	fx.New(
+		fx.Provide(
+			fx.Annotate(
+				cmd.NewRootCmd,
+				fx.ParamTags(`group:"commands"`),
+			),
+			asCommand(cmd.NewPrCmd, "pr"),
+			asSubCommand(cmd.NewPrMergeCmd, "pr"),
+			asSubCommand(cmd.NewPrRerunCmd, "pr"),
+			github.NewCli,
+			github.NewClient,
+			github.NewRestClient,
+			github.NewRepository,
+		),
+		fx.Invoke(func(rootCmd *cmd.RootCmd) {
+			err := rootCmd.Execute()
 
-	err := cmd.Run()
+			if err != nil {
+				os.Exit(1)
+			}
 
-	if nil != err {
-		panic(err)
-	}
+			os.Exit(0)
+		}),
+	).Run()
+}
+
+func asCommand(f any, name string) any {
+	return fx.Annotate(
+		f,
+		fx.As(new(cmd.Command)),
+		fx.ResultTags(`group:"commands"`),
+		fx.ParamTags(fmt.Sprintf(`group:"%s_subcommands"`, name)),
+	)
+}
+
+func asSubCommand(f any, parentName string) any {
+	return fx.Annotate(
+		f,
+		fx.As(new(cmd.Command)),
+		fx.ResultTags(fmt.Sprintf(`group:"%s_subcommands"`, parentName)),
+	)
 }

@@ -1,7 +1,6 @@
-package githubclient
+package github
 
 import (
-	"github.com/cli/go-gh"
 	"github.com/cli/go-gh/pkg/api"
 	"github.com/cli/go-gh/pkg/repository"
 	"io"
@@ -32,27 +31,9 @@ func (c *Client) Put(path string, body io.Reader, response interface{}) error {
 	return c.RestClient.Put(path, body, response)
 }
 
-func NewClient(restClient *api.RESTClient, repository *repository.Repository) (*Client, error) {
-	if nil == restClient {
-		ghRestClient, err := gh.RESTClient(nil)
-		if nil != err {
-			return nil, err
-		}
-
-		restClient = &ghRestClient
-	}
-
-	if nil == repository {
-		repo, err := gh.CurrentRepository()
-		if nil != err {
-			return nil, err
-		}
-
-		repository = &repo
-	}
-
+func NewClient(restClient api.RESTClient, repository repository.Repository) *Client {
 	return &Client{
-		RestClient: *restClient,
-		Repository: *repository,
-	}, nil
+		RestClient: restClient,
+		Repository: repository,
+	}
 }

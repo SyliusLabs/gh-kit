@@ -1,34 +1,37 @@
 package cmd
 
 import (
-	githubCli "github.com/SyliusLabs/gh-kit/internal/githubcli"
-	githubClient "github.com/SyliusLabs/gh-kit/internal/githubclient"
 	"github.com/spf13/cobra"
 )
 
-var ghCli githubCli.GhCliExecutor
-var ghClient githubClient.Client
-
-var rootCmd = &cobra.Command{
-	Use:   "kit",
-	Short: "Golang implementation of the Hubkit",
-	Long:  `GitHub Kit created by Jakub Tobiasz for Sylius`,
+type Command interface {
+	GetCommand() *cobra.Command
 }
 
-func init() {
-	var err error
+func GetCommand(command Command) *cobra.Command {
+	return command.GetCommand()
+}
 
-	ghCli = githubCli.NewGhCli()
+type RootCmd struct {
+	cmd *cobra.Command
+}
 
-	var client *githubClient.Client
-	client, err = githubClient.NewClient(nil, nil)
-	if nil != err {
-		panic(err)
+func (r *RootCmd) Execute() error {
+	return r.cmd.Execute()
+}
+
+func NewRootCmd(commands []Command) *RootCmd {
+	rootCmd := &RootCmd{
+		cmd: &cobra.Command{
+			Use:   "kit",
+			Short: "Golang implementation of the Hubkit",
+			Long:  `GitHub Kit created by Jakub Tobiasz for Sylius`,
+		},
 	}
 
-	ghClient = *client
-}
+	for _, subcommand := range commands {
+		rootCmd.cmd.AddCommand(GetCommand(subcommand))
+	}
 
-func Run() error {
-	return rootCmd.Execute()
+	return rootCmd
 }
