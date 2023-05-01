@@ -79,21 +79,6 @@ func (c *PrMergeCmd) RunE(cmd *cobra.Command, args []string) error {
 		return errors.New("⚠️ The Pull Request category must be provided")
 	}
 
-	mergeCategory, _ = cmd.Flags().GetString("category")
-
-	if "" == mergeCategory {
-		categoryPrompt := promptui.Select{
-			Label: "Select merge category",
-			Items: []string{"minor", "feature", "bugfix", "docs", "refactor", "test", "chore"},
-		}
-
-		_, mergeCategory, _ = categoryPrompt.Run()
-	}
-
-	if "" == mergeCategory {
-		return errors.New("⚠️ The Pull Request category must be provided")
-	}
-
 	mergeSubject := generator.GenerateCommitMessage(mergeCategory, pr.GetNumber(), pr.GetTitle(), pr.GetUser().GetLogin())
 
 	commits, commitsErr := c.ghClient.GetCommitsInPullRequest(pr.GetNumber())
@@ -104,10 +89,11 @@ func (c *PrMergeCmd) RunE(cmd *cobra.Command, args []string) error {
 	mergeBody := generator.GenerateCommitBody(pr, commits)
 
 	summaryMsg := `The pull request #%d on %s/%s will be merged with the following parameters:
-	- Subject: %s
-	- Strategy: %s
-	- Category: %s
-	- Body: %s`
+Subject: %s
+Strategy: %s
+Category: %s
+Body:
+%s`
 	fmt.Printf(summaryMsg, pr.GetNumber(), c.ghClient.Repository.Owner(), c.ghClient.Repository.Name(), mergeSubject, mergeStrategy, mergeCategory, mergeBody)
 
 	confirmPrompt := promptui.Select{
@@ -121,7 +107,14 @@ func (c *PrMergeCmd) RunE(cmd *cobra.Command, args []string) error {
 		return errors.New("🛑 The pull request has not been merged")
 	}
 
-	mergeErr := c.ghCli.Merge(pr.GetNumber(), mergeSubject, mergeBody, mergeStrategy)
+	deleteBranchPrompt := promptui.Select{
+		Label: "Do you want to delete the branch?",
+		Items: []string{"yes", "no"},
+	}
+
+	_, deleteBranch, _ := deleteBranchPrompt.Run()
+
+	mergeErr := c.ghCli.Merge(pr.GetNumber(), mergeSubject, mergeBody, mergeStrategy, "yes" == deleteBranch)
 
 	if nil != mergeErr {
 		errMsg := fmt.Sprintf("🛑 The pull request #%d could not be merged. Error message: %s\r\n", pr.GetNumber(), mergeErr.Error())

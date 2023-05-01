@@ -18,6 +18,9 @@ func main() {
 			asCommand(cmd.NewPrCmd, "pr"),
 			asSubCommand(cmd.NewPrMergeCmd, "pr"),
 			asSubCommand(cmd.NewPrRerunCmd, "pr"),
+			asCommand(cmd.NewUpmergeCmd, "upmerge"),
+			asSubCommand(cmd.NewUpmergeCreateCmd, "upmerge"),
+			asSubCommand(cmd.NewUpmergeMergeCmd, "upmerge"),
 			github.NewCli,
 			github.NewClient,
 			github.NewRestClient,
@@ -32,6 +35,7 @@ func main() {
 
 			os.Exit(0)
 		}),
+		fx.NopLogger,
 	).Run()
 }
 

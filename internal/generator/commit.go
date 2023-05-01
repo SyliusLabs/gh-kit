@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 	"github.com/google/go-github/v49/github"
+	"strings"
 )
 
 func GenerateCommitBody(pr github.PullRequest, commits []github.RepositoryCommit) string {
@@ -18,7 +19,25 @@ Commits
 `, pr.GetBase().GetRef(), pr.GetBody())
 
 	for _, commit := range commits {
-		msg += fmt.Sprintf("\r\n%s %s", commit.GetSHA(), commit.GetCommit().GetMessage())
+		commitMsg := strings.Split(commit.GetCommit().GetMessage(), "\n")
+		firstLineOfCommitMsg := commitMsg[0]
+		msg += fmt.Sprintf("  %s\r\n", firstLineOfCommitMsg)
+	}
+
+	return msg
+}
+
+func GenerateCommitBodyForUpmerge(headBranchName string, commits []github.RepositoryCommit) string {
+	msg := fmt.Sprintf("* %s:\r\n", headBranchName)
+
+	for _, commit := range commits {
+		if len(commit.Parents) > 1 {
+			continue
+		}
+
+		commitMsg := strings.Split(commit.GetCommit().GetMessage(), "\n")
+		firstLineOfCommitMsg := commitMsg[0]
+		msg += fmt.Sprintf("  %s\r\n", firstLineOfCommitMsg)
 	}
 
 	return msg
