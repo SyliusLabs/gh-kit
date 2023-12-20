@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"github.com/SyliusLabs/gh-kit/internal/github"
 	"github.com/spf13/cobra"
@@ -23,7 +22,7 @@ func (c *UpmergeCreateCmd) RunE(cmd *cobra.Command, args []string) error {
 
 	compare, err := c.ghClient.Compare(base, target)
 	if nil != err {
-		return errors.New(fmt.Sprintf("🛑 An error occurred while comparing %s and %s: %s", base, target, err.Error()))
+		return fmt.Errorf("🛑 An error occurred while comparing %s and %s: %s", base, target, err.Error())
 	}
 
 	if 0 == compare.GetAheadBy() {
@@ -33,19 +32,19 @@ func (c *UpmergeCreateCmd) RunE(cmd *cobra.Command, args []string) error {
 
 	baseReference, err := c.ghClient.GetReference(fmt.Sprintf("heads/%s", base))
 	if nil != err {
-		return errors.New(fmt.Sprintf("🛑 The base reference %s does not exist", base))
+		return fmt.Errorf("🛑 The base reference %s does not exist", base)
 	}
 
 	branchName := fmt.Sprintf("upmerge/%s|%s/%s", base, target, baseReference.GetObject().GetSHA()[0:7])
 	err = c.ghClient.CreateReference(fmt.Sprintf("heads/%s", branchName), baseReference.GetObject().GetSHA())
 	if nil != err {
-		return errors.New(fmt.Sprintf("🛑 The upmerge branch could not be created: %s", err.Error()))
+		return fmt.Errorf("🛑 The upmerge branch could not be created: %s", err.Error())
 	}
 
 	prTitle := fmt.Sprintf("Upmerge %s into %s", base, target)
 	err = c.ghCli.CreatePullRequest(prTitle, prTitle, branchName, target)
 	if nil != err {
-		return errors.New(fmt.Sprintf("🛑 The upmerge pull request could not be created: %s", err.Error()))
+		return fmt.Errorf("🛑 The upmerge pull request could not be created: %s", err.Error())
 	}
 
 	fmt.Println("✅ The upmerge pull request has been created")
