@@ -2,10 +2,8 @@ package github
 
 import (
 	"github.com/SyliusLabs/gh-kit/internal/test"
-	"github.com/cli/go-gh"
-	"github.com/google/go-github/v49/github"
+	"github.com/google/go-github/v57/github"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/h2non/gock.v1"
 	"testing"
 )
 

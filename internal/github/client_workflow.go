@@ -2,7 +2,7 @@ package github
 
 import (
 	"fmt"
-	"github.com/google/go-github/v49/github"
+	"github.com/google/go-github/v57/github"
 )
 
 func (c *Client) GetWorkflowRunsForHeadSha(headSha string) (github.WorkflowRuns, error) {

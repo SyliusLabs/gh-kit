@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/cli/go-gh"
 	"github.com/cli/go-gh/pkg/repository"
-	"github.com/google/go-github/v49/github"
+	"github.com/google/go-github/v57/github"
 )
 
 func (c *Client) Compare(base string, target string) (github.CommitsComparison, error) {

@@ -2,7 +2,7 @@ package generator
 
 import (
 	"fmt"
-	"github.com/google/go-github/v49/github"
+	"github.com/google/go-github/v57/github"
 	"strings"
 )
 
